@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send, User, Mail, Phone, MapPin, Calendar, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import emailjs from 'emailjs-com';
 
 const ApplicationForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -14,8 +13,11 @@ const ApplicationForm: React.FC = () => {
     gender: '',
     location: ''
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbx2UKidvcYtbDMhn-KFd7SsoT8w2mfrVyumsnqLoc75dlDTzgYYMnqQuxyo0nQrAVs0Jw/exec';
 
   const courses = [
     'Digital Marketing + AI',
@@ -37,41 +39,33 @@ const ApplicationForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus('idle');
 
     try {
-      // Configure EmailJS (you'll need to set up your EmailJS account)
-      const templateParams = {
-        to_email: 'digitrove@example.com', // Replace with actual email
-        from_name: formData.fullName,
-        from_email: formData.email,
-        phone: formData.phone,
-        course: formData.course,
-        age: formData.age,
-        gender: formData.gender,
-        location: formData.location,
-        message: `New application from ${formData.fullName} for ${formData.course}`
-      };
-
-      // Replace these with your actual EmailJS credentials
-      await emailjs.send(
-        'YOUR_SERVICE_ID',
-        'YOUR_TEMPLATE_ID',
-        templateParams,
-        'YOUR_PUBLIC_KEY'
-      );
-
-      setSubmitStatus('success');
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        course: '',
-        age: '',
-        gender: '',
-        location: ''
+      const response = await fetch(scriptURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(formData as any).toString(),
       });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          course: '',
+          age: '',
+          gender: '',
+          location: ''
+        });
+      } else {
+        setSubmitStatus('error');
+      }
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Error submitting form:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -102,103 +96,34 @@ const ApplicationForm: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
+              <InputField label="Full Name *" icon={<User />} name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="Enter your full name" />
+              <InputField label="Email Address *" icon={<Mail />} name="email" value={formData.email} onChange={handleInputChange} type="email" placeholder="Enter your email" />
+              <InputField label="Phone Number *" icon={<Phone />} name="phone" value={formData.phone} onChange={handleInputChange} type="tel" placeholder="Enter your phone number" />
+              
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  <User className="w-4 h-4 inline mr-2" />
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                  placeholder="Enter your full name"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  <Mail className="w-4 h-4 inline mr-2" />
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                  placeholder="Enter your email"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  <Phone className="w-4 h-4 inline mr-2" />
-                  Phone Number *
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Selected Course *
-                </label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Selected Course *</label>
                 <select
                   name="course"
                   value={formData.course}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-400"
                 >
                   <option value="">Select a course</option>
-                  {courses.map((course) => (
-                    <option key={course} value={course}>
-                      {course}
-                    </option>
-                  ))}
+                  {courses.map(course => <option key={course} value={course}>{course}</option>)}
                 </select>
               </div>
 
+              <InputField label="Age *" icon={<Calendar />} name="age" value={formData.age} onChange={handleInputChange} type="number" placeholder="Enter your age" />
+              
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  <Calendar className="w-4 h-4 inline mr-2" />
-                  Age *
-                </label>
-                <input
-                  type="number"
-                  name="age"
-                  value={formData.age}
-                  onChange={handleInputChange}
-                  required
-                  min="10"
-                  max="100000000"
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                  placeholder="Enter your age"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  <Users className="w-4 h-4 inline mr-2" />
-                  Gender *
-                </label>
+                <label className="block text-sm font-medium text-gray-300 mb-2"><Users className="w-4 h-4 inline mr-2" />Gender *</label>
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-yellow-400"
                 >
                   <option value="">Select gender</option>
                   <option value="male">Male</option>
@@ -208,31 +133,16 @@ const ApplicationForm: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                <MapPin className="w-4 h-4 inline mr-2" />
-                Location *
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all"
-                placeholder="Enter your city/location"
-              />
-            </div>
+            <InputField label="Location *" icon={<MapPin />} name="location" value={formData.location} onChange={handleInputChange} placeholder="Enter your city/location" />
 
             {submitStatus === 'success' && (
               <div className="bg-green-800 border border-green-600 text-green-200 px-4 py-3 rounded-lg">
-                Application submitted successfully! We'll contact you soon.
+                Application submitted successfully!
               </div>
             )}
-
             {submitStatus === 'error' && (
               <div className="bg-red-800 border border-red-600 text-red-200 px-4 py-3 rounded-lg">
-                Error submitting application. Please try again.
+                Submission failed. Please try again.
               </div>
             )}
 
@@ -241,7 +151,7 @@ const ApplicationForm: React.FC = () => {
               disabled={isSubmitting}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-4 px-8 rounded-lg hover:from-yellow-500 hover:to-yellow-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-4 px-8 rounded-lg hover:from-yellow-500 hover:to-yellow-700 disabled:opacity-50 flex items-center justify-center"
             >
               {isSubmitting ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent" />
@@ -258,5 +168,23 @@ const ApplicationForm: React.FC = () => {
     </div>
   );
 };
+
+// Reusable InputField Component
+const InputField = ({ label, icon, name, value, onChange, placeholder, type = "text" }: any) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-300 mb-2">
+      {icon} {label}
+    </label>
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      required
+      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-400"
+      placeholder={placeholder}
+    />
+  </div>
+);
 
 export default ApplicationForm;

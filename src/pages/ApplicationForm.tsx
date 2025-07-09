@@ -17,7 +17,7 @@ const ApplicationForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const scriptURL = 'https://script.google.com/macros/s/AKfycby_Y9Onv5VNTtWP7o5WRY2ScgnpCZtFJjYw9760R-7zAWO0nr9geXTiworsuji4lqot5A/exec';
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzAp1BGglcpFIgXqGVRYjQnVQ6LvOdqKvGwE-9axkALw3XXjQMIuBfUjVhmPW5PpbLJ-w/exec';
 
   const courses = [
     'Digital Marketing + AI',

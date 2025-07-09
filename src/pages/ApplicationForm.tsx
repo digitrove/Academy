@@ -42,15 +42,52 @@ const ApplicationForm: React.FC = () => {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch(scriptURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(formData as any).toString(),
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value);
       });
 
-      if (response.ok) {
+      const response = await fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formDataToSend,
+      });
+
+      // Since we're using no-cors mode, we can't check response.ok
+      // We'll assume success if no error is thrown
+      setSubmitStatus('success');
+      setFormData({
+        fullName: '',
+        email: '',
+        phone: '',
+        course: '',
+        age: '',
+        gender: '',
+        location: ''
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      
+      // Fallback: Try with a different approach
+      try {
+        const fallbackForm = document.createElement('form');
+        fallbackForm.action = scriptURL;
+        fallbackForm.method = 'POST';
+        fallbackForm.target = '_blank';
+        fallbackForm.style.display = 'none';
+        
+        Object.entries(formData).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          fallbackForm.appendChild(input);
+        });
+        
+        document.body.appendChild(fallbackForm);
+        fallbackForm.submit();
+        document.body.removeChild(fallbackForm);
+        
         setSubmitStatus('success');
         setFormData({
           fullName: '',
@@ -61,12 +98,10 @@ const ApplicationForm: React.FC = () => {
           gender: '',
           location: ''
         });
-      } else {
+      } catch (fallbackError) {
+        console.error('Fallback submission also failed:', fallbackError);
         setSubmitStatus('error');
       }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }

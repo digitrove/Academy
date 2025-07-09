@@ -42,52 +42,21 @@ const ApplicationForm: React.FC = () => {
     setSubmitStatus('idle');
 
     try {
-      const formDataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
-      });
-
-      const response = await fetch(scriptURL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formDataToSend,
-      });
-
-      // Since we're using no-cors mode, we can't check response.ok
-      // We'll assume success if no error is thrown
-      setSubmitStatus('success');
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        course: '',
-        age: '',
-        gender: '',
-        location: ''
-      });
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      
-      // Fallback: Try with a different approach
+      // Primary method: Use fetch with no-cors mode and FormData
       try {
-        const fallbackForm = document.createElement('form');
-        fallbackForm.action = scriptURL;
-        fallbackForm.method = 'POST';
-        fallbackForm.target = '_blank';
-        fallbackForm.style.display = 'none';
-        
+        const formDataToSend = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = value;
-          fallbackForm.appendChild(input);
+          formDataToSend.append(key, value);
         });
-        
-        document.body.appendChild(fallbackForm);
-        fallbackForm.submit();
-        document.body.removeChild(fallbackForm);
-        
+
+        await fetch(scriptURL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: formDataToSend,
+        });
+
+        // Success - show alert and reset form
+        alert('Application submitted successfully! We will contact you soon.');
         setSubmitStatus('success');
         setFormData({
           fullName: '',
@@ -98,10 +67,46 @@ const ApplicationForm: React.FC = () => {
           gender: '',
           location: ''
         });
-      } catch (fallbackError) {
-        console.error('Fallback submission also failed:', fallbackError);
-        setSubmitStatus('error');
+      } catch (fetchError) {
+        console.error('Fetch failed, trying fallback method:', fetchError);
+        
+        // Fallback method: Create and submit hidden HTML form
+        const fallbackForm = document.createElement('form');
+        fallbackForm.action = scriptURL;
+        fallbackForm.method = 'POST';
+        fallbackForm.style.display = 'none';
+        
+        // Add form fields
+        Object.entries(formData).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value;
+          fallbackForm.appendChild(input);
+        });
+        
+        // Submit form
+        document.body.appendChild(fallbackForm);
+        fallbackForm.submit();
+        document.body.removeChild(fallbackForm);
+        
+        // Success - show alert and reset form
+        alert('Application submitted successfully! We will contact you soon.');
+        setSubmitStatus('success');
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          course: '',
+          age: '',
+          gender: '',
+          location: ''
+        });
       }
+    } catch (error) {
+      console.error('Both submission methods failed:', error);
+      alert('Failed to submit application. Please try again or contact us directly.');
+      setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }

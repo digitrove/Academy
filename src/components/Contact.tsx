@@ -68,7 +68,7 @@ const Contact: React.FC = () => {
     {
       icon: Mail,
       title: 'Email Address',
-      details: 'info@digitrove.com',
+      details: 'contactacademy@digitrove.site',
       action: 'mailto:contactacademy@digitrove.site'
     },
     {

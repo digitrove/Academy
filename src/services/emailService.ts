@@ -2,7 +2,7 @@ import emailjs from '@emailjs/browser';
 
 // EmailJS configuration
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_8j3178f';
-const EMAILJS_TEMPLATE_ID = 'template_contact';
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_contact';
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'Ikhvtztl_G5SgPyym'; // Use environment variable with fallback
 
 export interface ContactFormData {

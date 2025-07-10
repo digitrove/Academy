@@ -3,7 +3,7 @@ import emailjs from '@emailjs/browser';
 // EmailJS configuration
 const EMAILJS_SERVICE_ID = 'service_digitrove';
 const EMAILJS_TEMPLATE_ID = 'template_contact';
-const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'; // Replace with your actual public key
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || ''; // Use environment variable
 
 export interface ContactFormData {
   name: string;
@@ -26,6 +26,11 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
   };
 
   try {
+    // Check if EmailJS is properly configured
+    if (!EMAILJS_PUBLIC_KEY) {
+      throw new Error('EmailJS public key not configured. Please set VITE_EMAILJS_PUBLIC_KEY in your environment variables.');
+    }
+
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,

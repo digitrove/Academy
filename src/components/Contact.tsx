@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import emailjs from '@emailjs/browser';
+import { sendContactEmail, sendContactEmailFallback, type ContactFormData } from '../services/emailService';
 import { 
   Phone, 
   Mail, 
@@ -36,40 +36,16 @@ const Contact: React.FC = () => {
     setSubmitStatus('idle');
 
     try {
-      // EmailJS configuration
-      const serviceId = 'service_digitrove';
-      const templateId = 'template_contact';
-      const publicKey = 'YOUR_PUBLIC_KEY'; // You'll need to replace this with your actual public key
-
-      const templateParams = {
-        to_email: 'contactacademy@digitrove.site',
-        subject: `Website Contact: ${formData.subject}`,
-        fullName: formData.name,
-        email: formData.email,
-        message: formData.message,
-        // Additional fields for compatibility
-        from_name: formData.name,
-        from_email: formData.email,
-        user_subject: formData.subject
-      };
-
-      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      // Use the centralized email service
+      await sendContactEmail(formData);
       
       setSubmitStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
       console.error('Email sending failed:', error);
-      // Try fallback method
+      // Use fallback method (mailto link)
       try {
-        const subject = encodeURIComponent(`Website Contact: ${formData.subject}`);
-        const body = encodeURIComponent(
-          `Name: ${formData.name}\n` +
-          `Email: ${formData.email}\n` +
-          `Message:\n${formData.message}`
-        );
-        
-        const mailtoLink = `mailto:contactacademy@digitrove.site?subject=${subject}&body=${body}`;
-        window.open(mailtoLink, '_blank');
+        await sendContactEmailFallback(formData);
         
         setSubmitStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });

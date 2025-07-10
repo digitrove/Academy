@@ -69,7 +69,7 @@ const Contact: React.FC = () => {
       icon: Mail,
       title: 'Email Address',
       details: 'info@digitrove.com',
-      action: 'mailto:info@digitrove.com'
+      action: 'mailto:contactacademy@digitrove.site'
     },
     {
       icon: MessageCircle,

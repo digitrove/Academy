@@ -42,11 +42,15 @@ const Contact: React.FC = () => {
       const publicKey = 'YOUR_PUBLIC_KEY'; // You'll need to replace this with your actual public key
 
       const templateParams = {
+        to_email: 'contactacademy@digitrove.site',
+        subject: `Website Contact: ${formData.subject}`,
+        fullName: formData.name,
+        email: formData.email,
+        message: formData.message,
+        // Additional fields for compatibility
         from_name: formData.name,
         from_email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        to_email: 'contactacademy@digitrove.site'
+        user_subject: formData.subject
       };
 
       await emailjs.send(serviceId, templateId, templateParams, publicKey);
@@ -55,7 +59,24 @@ const Contact: React.FC = () => {
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
       console.error('Email sending failed:', error);
-      setSubmitStatus('error');
+      // Try fallback method
+      try {
+        const subject = encodeURIComponent(`Website Contact: ${formData.subject}`);
+        const body = encodeURIComponent(
+          `Name: ${formData.name}\n` +
+          `Email: ${formData.email}\n` +
+          `Message:\n${formData.message}`
+        );
+        
+        const mailtoLink = `mailto:contactacademy@digitrove.site?subject=${subject}&body=${body}`;
+        window.open(mailtoLink, '_blank');
+        
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } catch (fallbackError) {
+        console.error('Fallback method also failed:', fallbackError);
+        setSubmitStatus('error');
+      }
     } finally {
       setIsSubmitting(false);
     }

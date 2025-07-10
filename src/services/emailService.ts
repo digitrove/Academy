@@ -14,11 +14,15 @@ export interface ContactFormData {
 
 export const sendContactEmail = async (formData: ContactFormData): Promise<void> => {
   const templateParams = {
+    to_email: 'contactacademy@digitrove.site',
+    subject: `Website Contact: ${formData.subject}`,
+    fullName: formData.name,
+    email: formData.email,
+    message: formData.message,
+    // Additional fields for the email template
     from_name: formData.name,
     from_email: formData.email,
-    subject: `Website Contact: ${formData.subject}`,
-    message: formData.message,
-    to_email: 'contactacademy@digitrove.site'
+    user_subject: formData.subject
   };
 
   try {
@@ -42,12 +46,11 @@ export const sendContactEmail = async (formData: ContactFormData): Promise<void>
 
 // Alternative method using a fallback service
 export const sendContactEmailFallback = async (formData: ContactFormData): Promise<void> => {
-  // This creates a mailto link as a fallback
+  // This creates a mailto link as a fallback with the exact format you specified
   const subject = encodeURIComponent(`Website Contact: ${formData.subject}`);
   const body = encodeURIComponent(
     `Name: ${formData.name}\n` +
     `Email: ${formData.email}\n` +
-    `Subject: ${formData.subject}\n\n` +
     `Message:\n${formData.message}`
   );
   

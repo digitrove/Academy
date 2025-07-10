@@ -25,11 +25,25 @@ To enable email functionality for the contact form:
 
 ### 2. Configure EmailJS Template
 Create a template with these variables:
-- `{{from_name}}` - Sender's name
-- `{{from_email}}` - Sender's email
-- `{{subject}}` - Email subject
-- `{{message}}` - Email message
-- `{{to_email}}` - Recipient email (contactacademy@digitrove.site)
+
+**Subject Line:**
+```
+Website Contact: {{user_subject}}
+```
+
+**Email Body:**
+```
+Name: {{fullName}}
+Email: {{email}}
+Message:
+{{message}}
+```
+
+**Template Variables:**
+- `{{user_subject}}` - User's subject line
+- `{{fullName}}` - Sender's full name
+- `{{email}}` - Sender's email address
+- `{{message}}` - User's message content
 
 ### 3. Update Configuration
 Replace the placeholder values in `src/services/emailService.ts`:

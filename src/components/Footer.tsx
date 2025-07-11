@@ -30,11 +30,8 @@ const Footer: React.FC = () => {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: '#', name: 'Facebook' },
-    { icon: Twitter, href: '#', name: 'Twitter' },
-    { icon: Instagram, href: '#', name: 'Instagram' },
-    { icon: Linkedin, href: '#', name: 'LinkedIn' },
-    { icon: Youtube, href: '#', name: 'YouTube' }
+    { icon: Facebook, href: 'https://www.facebook.com/digitrove.academy', name: 'Facebook' },
+    { icon: Instagram, href: 'https://www.instagram.com/digitrove.academy', name: 'Instagram' }
   ];
 
   return (

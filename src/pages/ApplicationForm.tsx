@@ -25,7 +25,8 @@ const ApplicationForm: React.FC = () => {
     'CIT (Computer Information Technology) + AI',
     'Web Development + AI',
     'AI + Agentic AI',
-    'Shopify + Dropshipping'
+    'Shopify + Dropshipping',
+    "Free Webinar"
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

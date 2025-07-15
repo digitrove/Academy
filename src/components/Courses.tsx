@@ -10,7 +10,7 @@ import {
   Clock,
   Award,
   CalendarDays,
-  Clock5
+  Clock5,
   Users,
   Star,
   Zap

@@ -188,7 +188,7 @@ const Courses: React.FC = () => {
                   type: "spring",
                   stiffness: 200
                 }}
-                className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border-2 border-white"
+                className=""
               >
                 <span className="">100% FREE</span>
               </motion.div>

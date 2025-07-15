@@ -190,7 +190,6 @@ const Courses: React.FC = () => {
                 }}
                 className=""
               >
-                <span className="">100% FREE</span>
               </motion.div>
             </div>
 
